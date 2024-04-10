@@ -3,43 +3,45 @@ import React, { useEffect, useState } from 'react'
 
 import { BASE_URL, USER_DOMAIN } from '../utils/config';
 
-export default function singleHost() {
-    const [host, setHost] = useState({});
+export default function SingleHost({props}) {
+    const [user, setUser] = useState("");
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                
                 const res = await axios.get(`${BASE_URL}${USER_DOMAIN}/single/${props.user_id}`);
-                setHost(res.data.data);
+                console.log(res.data)
+                setUser(res.data.data);
                 console.log(res.data.data)
-            } catch (error) {
+            } catch (error) { 
                 setError(error);
             } 
         };
 
         fetchData();
-    }, []);
+    },[]);
 
-    const singleUserID = data._id;
+    // const singleUserID = data._id;
 
     return(
         <table>
             <tbody>
-                {data.map(host =>(
-                    <tr key={host}>
+            {/* {host && host.map(hostItem => ( */}
+                    <tr >
                     <th scope="row">
-                    <span><img src={host.image} alt="" className="userImage"/></span>
-                    {host.firstName} <span>{host.lastName}</span>
+                    <span><img src={user.image} alt="" className="userImage"/></span>
+                    {user.username} <span>{user.lastName}</span>
                   </th>
-                  <td className='pt-4'>{host.email}</td>
+                  <td className='pt-4'>{user.email}</td>
                   <td>
                     <button className="change-btn-green mt-3">Mood</button>
                   </td>
                   <td>{}</td>
-                  <td>{host.percentage}</td>
+                  <td>{user.percentage}</td>
                     </tr>
-                ))}
+                {/* ))} */}
             </tbody>
         </table>
     )

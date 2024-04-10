@@ -1,13 +1,15 @@
+import { Link } from "react-router-dom";
 
 function Sidebar() {
     return (
         <>
             <ul className="navbar-nav bg-gradient-white sidebar sidebar-dark accordion" id="accordionSidebar">
 
-                <a className="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                    <div className="sidebar-brand-text mx-3 text-dark">MINDCAST</div>
-                </a>
-
+                <Link to="/">
+                    <a className="sidebar-brand d-flex align-items-center justify-content-center" x>
+                        <div className="sidebar-brand-text mx-3 text-dark">MINDCAST</div>
+                    </a>
+                </Link>
                 <hr className=" my-0" />
                 <li className="nav-item active">
                     <a className="nav-link" href="index.html">
@@ -16,30 +18,46 @@ function Sidebar() {
                 </li>
 
 
-                <li className="nav-item">
-                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                        aria-expanded="true" aria-controls="collapseTwo">
-                        <i class="fas fa-fw fa-cog"></i>
-                        <span>Content</span>
-                    </a>
-                </li>
+                <Link to="/contentPage">
+                    <li className="nav-item">
+                        <a className="nav-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                            aria-expanded="true" aria-controls="collapseTwo">
+                            <i class="fas fa-fw fa-cog"></i>
+                            <span>Content</span>
+                        </a>
+                    </li>
+                </Link>
 
+                <Link to="/createInterest">
+                    <li className="nav-item">
+                        <a className="nav-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                            aria-expanded="true" aria-controls="collapseTwo">
+                            <i class="fas fa-fw fa-cog"></i>
+                            <span>Interest</span>
+                        </a>
+                    </li>
+                </Link>
+
+                <Link to="/users">
                 <li className="nav-item">
-                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                    <a className="nav-link collapsed"data-toggle="collapse" data-target="#collapseUtilities"
                         aria-expanded="true" aria-controls="collapseUtilities">
                         <i class="fas fa-fw fa-wrench"></i>
                         <span>Users</span>
                     </a>
 
                 </li>
+                </Link>
 
-                <li className="nav-item">
-                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-                        aria-expanded="true" aria-controls="collapsePages">
-                        <i className="fas fa-fw fa-folder"></i>
-                        <span>Host request</span>
-                    </a>
-                </li>
+                <Link to="/hostrequest">
+                    <li className="nav-item">
+                        <a className="nav-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                            aria-expanded="true" aria-controls="collapseTwo">
+                            <i class="fas fa-fw fa-cog"></i>
+                            <span>Host Request</span>
+                        </a>
+                    </li>
+                </Link>
 
                 <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"

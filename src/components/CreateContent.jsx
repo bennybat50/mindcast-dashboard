@@ -5,15 +5,12 @@ import { ThreeDotsVertical, ArrowRightShort } from 'react-bootstrap-icons';
 import profileImageOne from "../assets/image/profileImage-one.webp"
 
 import { BASE_URL, USER_DOMAIN } from '../utils/config';
-
+// import singleHost from './SingelHost';
 import Resource from './Resource';
-import {Cloudinary} from "@cloudinary/url-gen";
+import { Cloudinary } from "@cloudinary/url-gen";
 
-
+ 
 function CreateContent({ itemId }) {
-
-  
-
 
 
   const [data, setData] = useState([]);
@@ -21,26 +18,27 @@ function CreateContent({ itemId }) {
   const [interests, setInterests] = useState([]);
   const [hostRequests, setHostRequests] = useState([]);
   const [error, setError] = useState(null);
-  const [image, setImage]=useState(null)
-  const [imageFile, setImageFile]=useState(null)
-  const [audioFile, setAudioFile]=useState(null)
-  const [duration, setDuration]=useState(null)
-  const [mood, setMood]=useState(null)
-  const [loadingCreation, setLoadingCreation]=useState(false)
-  
+  const [image, setImage] = useState(null)
+  const [imageFile, setImageFile] = useState(null)
+  const [audioFile, setAudioFile] = useState(null)
+  const [duration, setDuration] = useState(null)
+  const [mood, setMood] = useState(null)
+  const [loadingCreation, setLoadingCreation] = useState(false)
+  const [showAll, setShowAll] = useState(false);
 
-  const [title, setTitle]=useState("")
-  const [descp, setDescp]=useState("")
-  const [interestID, setInterestID]=useState("")
-  const [userID, setUserID]=useState("")
-  
+
+  const [title, setTitle] = useState("")
+  const [descp, setDescp] = useState("")
+  const [interestID, setInterestID] = useState("")
+  const [userID, setUserID] = useState("")
+
 
   const uploadImage = async (uploadImg) => {
-  
- 
+
+
     const data = new FormData();
     data.append("file", uploadImg);
-    data.append( "upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+    data.append("upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
     data.append("cloud_name", process.env.REACT_APP_CLOUDINARY_CLOUD_NAME);
     data.append("folder", "Cloudinary-React");
 
@@ -54,17 +52,17 @@ function CreateContent({ itemId }) {
       );
       const res = await response.json();
       //  console.log(res);
-    
+
       return res.secure_url
-      
+
     } catch (error) {
- 
+
       return null
     }
   };
 
   useEffect(() => {
-    
+
 
     fetchData();
   }, []);
@@ -72,7 +70,9 @@ function CreateContent({ itemId }) {
   const fetchData = async () => {
     try {
       const res = await axios.get(`${BASE_URL}${USER_DOMAIN}/users`);
-      setData(res.data.data);
+      const reversedData = res.data.data.reverse(); // Reverse the data
+      setData(reversedData);
+      console.log(reversedData)
 
       const interestsRes = await axios.get(`${BASE_URL}${USER_DOMAIN}/interests`);
       setInterests(interestsRes.data.data);
@@ -82,6 +82,8 @@ function CreateContent({ itemId }) {
 
       const hostData = await axios.get(`${BASE_URL}${USER_DOMAIN}/hosts`);
       setHostRequests(hostData.data.data)
+
+      console.log(hostData)
       //console.log(res.data.data)
     } catch (error) {
       setError(error);
@@ -106,83 +108,91 @@ function CreateContent({ itemId }) {
 
 
   const sortedUsers = [...data].sort((a, b) => new Date(b.time_created) - new Date(a.time_created));
+  // const dataToShow = showAll ? sortedUsers : data.slice(0, 6);
 
-  const handleFileSelected = (event)=>{
+  // const handleSeeMoreClick = () => {
+  //   setShowAll(!showAll);
+  // };
+  const handleFileSelected = (event) => {
     setImage(URL.createObjectURL(event.target.files[0]))
     setImageFile(event.target.files[0])
   }
 
-  const handleAudioSelected = (event)=>{
-    
+
+
+
+
+  const handleAudioSelected = (event) => {
+
     console.log(event.target.files[0]);
     setAudioFile(event.target.files[0])
 
-    let file=URL.createObjectURL(event.target.files[0]);
+    let file = URL.createObjectURL(event.target.files[0]);
     console.log(file);
 
-    
-     
-    
-    
+
+
+
+
   }
 
-  const saveContent = async(event)  =>{
+  const saveContent = async (event) => {
     event.preventDefault()
-    if(imageFile==null ||audioFile==null ){
+    if (imageFile == null || audioFile == null) {
       alert("Please select your image and audio file")
-    }else{
+    } else {
       setLoadingCreation(true)
-      let imageURL= await uploadImage(imageFile)
-      let audioURL= await uploadImage(audioFile)
-      
-      if(imageURL!=null && audioURL!=null){
-        let resourceData={
-   
+      let imageURL = await uploadImage(imageFile)
+      let audioURL = await uploadImage(audioFile)
+
+      if (imageURL != null && audioURL != null) {
+        let resourceData = {
+
           "title": title,
           "description": descp,
           "image": imageURL,
           "userID": userID,
           "duration": duration,
           "moodType": mood,
-          "interestID":interestID,
+          "interestID": interestID,
           "resourceUrl": audioURL
-      }
-      console.log(resourceData);
-      await axios.post(`${BASE_URL}${USER_DOMAIN}/resources`, resourceData);
-      fetchData();
-      setLoadingCreation(false)
-      alert("Content Uploaded Successfully")
-      }else{
+        }
+        console.log(resourceData);
+        await axios.post(`${BASE_URL}${USER_DOMAIN}/resources`, resourceData);
+        fetchData();
+        setLoadingCreation(false)
+        alert("Content Uploaded Successfully")
+      } else {
         alert("Image or Audio encountered error during upload")
       }
     }
-  
+
 
   }
 
-  const handleFormChange = (event)=>{
-  
-    if(event.target.name==="title"){
+  const handleFormChange = (event) => {
+
+    if (event.target.name === "title") {
       setTitle(event.target.value)
     }
 
-    if(event.target.name==="descp"){
+    if (event.target.name === "descp") {
       setDescp(event.target.value)
     }
 
-    if(event.target.name==="interest"){
+    if (event.target.name === "interest") {
       setInterestID(event.target.value)
     }
 
-    if(event.target.name==="userID"){
+    if (event.target.name === "userID") {
       setUserID(event.target.value)
     }
 
-    if(event.target.name==="mood"){
+    if (event.target.name === "mood") {
       setMood(event.target.value)
     }
 
-    if(event.target.name==="duration"){
+    if (event.target.name === "duration") {
       setDuration(event.target.value)
     }
 
@@ -212,9 +222,9 @@ function CreateContent({ itemId }) {
                 <div className="row no-gutters align-items-center">
                   <div className="col mr-1">
                     <div className="text-xs text-secondary mb-1">
-                       Audio files</div>
+                      Audio files</div>
                     <div className="h5 mb-0 font-weight-bold text-dark">{resources.length}</div>
-                   </div>
+                  </div>
                   <div className="col-auto">
                     <i className="fas fa-calendar fa-2x text-gray-300"></i>
                   </div>
@@ -232,7 +242,7 @@ function CreateContent({ itemId }) {
                     <div className="text-xs text-secondary mb-1">
                       Users</div>
                     <div className="h5 mb-0 font-weight-bold text-dark">{sortedUsers.length}</div>
-                   </div>
+                  </div>
                   <div className="col-auto">
                     <i className="fas fa-calendar fa-2x text-gray-300"></i>
                   </div>
@@ -250,7 +260,7 @@ function CreateContent({ itemId }) {
                     <div className="text-xs text-secondary mb-1">
                       Host request</div>
                     <div className="h5 mb-0 font-weight-bold text-dark">{hostRequests.length}</div>
-                   </div>
+                  </div>
                   <div className="col-auto">
                     <i className="fas fa-calendar fa-2x text-gray-300"></i>
                   </div>
@@ -268,7 +278,7 @@ function CreateContent({ itemId }) {
                     <div className="text-xs text-secondary mb-1">
                       Avg. time on app</div>
                     <div className="h5 mb-0 font-weight-bold text-dark">00:00</div>
-                   </div>
+                  </div>
                   <div className="col-auto">
                     <i className="fas fa-calendar fa-2x text-gray-300"></i>
                   </div>
@@ -346,7 +356,7 @@ function CreateContent({ itemId }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {sortedUsers.map(user => (
+                        {sortedUsers.slice(0, 6).map(user => (
                           <tr key={user.id}>
                             <th scope="row">
                               <span><img src={user.image} alt="" className="userImage" /></span>
@@ -354,12 +364,12 @@ function CreateContent({ itemId }) {
                             </th>
                             <td className='pt-4'>{user.email}</td>
                             <td>
-                              
-                              {user.mood==="Happy"?<label className="badge-pill badge-success mt-3">HAPPY</label>:<></>}
-                              {user.mood==="Sad"?<label className="badge-pill badge-dark mt-3">SAD</label>:<></>}
-                              {user.mood==="Angry"?<label className="badge-pill badge-danger mt-3">ANGRY</label>:<></>}
+
+                              {user.mood === "Happy" ? <label className="badge-pill badge-success mt-3">HAPPY</label> : <></>}
+                              {user.mood === "Sad" ? <label className="badge-pill badge-dark mt-3">SAD</label> : <></>}
+                              {user.mood === "Angry" ? <label className="badge-pill badge-danger mt-3">ANGRY</label> : <></>}
                             </td>
-                             <td>{user.percentage}</td>
+                            <td>{user.percentage}</td>
                             <td>
                               <li className="nav-item dropdown no-arrow">
                                 <a className="nav-link dropdown-toggle" href="#" id="userDropdown"
@@ -392,21 +402,59 @@ function CreateContent({ itemId }) {
                       </tbody>
                     </table>
                   </div>
-                  <div>
-                    <p className="text-center view-more-social-track text-primary">See all data <ArrowRightShort /></p>
-                  </div>
+                  {/* {data.length > 6 && (
+                    <button className="btn btn-primary  w-30" onClick={handleSeeMoreClick}>
+                      {showAll ? 'Show Less' : 'See More'}
+                    </button>
+                  )} */}
                 </div>
               </div>
 
             </div>
           </div>
+
+
+
           <div className="col-xl-4 col-lg-5">
             <div className="card mb-4">
               <div className="card-header py-3 flex-row align-items-center">
                 <h6 className="m-0 font-weight-bold text-dark">Become a host requests</h6>
               </div>
               <div className="card-body">
+
+              {hostRequests.map(host => (
                 <div className="Profile-image d-flex justify-content-between border-bottom">
+                  <div className="d-flex">
+                    <img src={host.image}  alt="" className='profileImage' />
+                    <div className="Profile-details">
+                      <li>{host.firstName} <span>{host.lastName}</span> </li>
+                      <li>141 mutual friends</li>
+                    </div>
+                  </div>
+                  <div>
+                    <li className="nav-item dropdown no-arrow">
+                      <a className="nav-link dropdown-toggle" href="#" id="userDropdown"
+                        role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i className="bi bi-three-dots-vertical"></i>
+                      </a>
+                      <div className="dropdown-menu dropdown-menu-left animated--grow-in"
+                        aria-labelledby="userDropdown">
+                        <a className="dropdown-item" href="#">
+                          Approve
+                        </a>
+                        <a className="dropdown-item text-danger" href="#" data-toggle="modal"
+                          data-target="">
+                          Decline
+                        </a>
+
+                      </div>
+                    </li>
+                  </div>
+                </div>
+              ))}
+                
+                {/* <div className="Profile-image d-flex justify-content-between border-bottom">
                   <div className="d-flex">
                     <img src={profileImageOne} alt="" className='profileImage' />
                     <div className="Profile-details">
@@ -521,41 +569,13 @@ function CreateContent({ itemId }) {
                       </div>
                     </li>
                   </div>
-                </div>
-                <div className="Profile-image d-flex justify-content-between border-bottom">
-                  <div className="d-flex">
-                    <img src={profileImageOne} alt="" className='profileImage' />
-                    <div className="Profile-details">
-                      <li>Laquita Elliott</li>
-                      <li>141 mutual friends</li>
-                    </div>
-                  </div>
-                  <div>
-                    <li className="nav-item dropdown no-arrow">
-                      <a className="nav-link dropdown-toggle" href="#" id="userDropdown"
-                        role="button" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i className="bi bi-three-dots-vertical"></i>
-                      </a>
-                      <div className="dropdown-menu dropdown-menu-left animated--grow-in"
-                        aria-labelledby="userDropdown">
-                        <a className="dropdown-item" href="#">
-                          Approve
-                        </a>
-                        <a className="dropdown-item text-danger" href="#" data-toggle="modal"
-                          data-target="">
-                          Decline
-                        </a>
-
-                      </div>
-                    </li>
-                  </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
         </div>
 
+{/* <singleHost/> */}
         {/* <div className="container card pb-4">
           <div className="table-responsive">
             <table className="table">
@@ -733,7 +753,7 @@ function CreateContent({ itemId }) {
           </div>
         </div> */}
 
-        <Resource/>
+        <Resource />
 
 
       </div>
@@ -743,84 +763,84 @@ function CreateContent({ itemId }) {
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-            <h4 class="text-dark">Create Content</h4>
+              <h4 class="text-dark">Create Content</h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
             </div>
             <div class="container modal-body">
               <form action="" onSubmit={saveContent}>
-              <div>
                 <div>
-                 
-                </div>
-                <div>
-                  <p>cover image</p>
                   <div>
-                    {image!=null?<img src={image} alt='' className='uploadImg' />:<></>}
+
+                  </div>
+                  <div>
+                    <p>cover image</p>
                     <div>
-                      <label for="input-file" class="img-cover">
-                        <div><span class="text-primary">click to upload</span></div>
-                      </label>
-                    </div>
-                    <input type="file" id="input-file" class="hidden" onChange={handleFileSelected} accept="image/png, image/gif, image/jpeg"/>
-                  </div>
-                  <div class="pt-4">
-                    <p>Title</p>
-                    <div class="title">
-                      <input type="text" name="title" id="title" onChange={handleFormChange} />
-                    </div>
-                  </div>
-                  <div class="pt-4">
-                    <p>Description</p>
-                    <div class="description">
-                      <textarea name="descp" id="" onChange={handleFormChange}></textarea>
-                    </div>
-                  </div>
-                  <div class="pt-4">
-                    <p>Duration</p>
-                    <div class="title">
-                    <input type="text" name="duration"  onChange={handleFormChange} />
-                    </div>
-                  </div>
-                  <div class="pt-4 modal-select">
-                    <select name="interest" id="" class="select-modal" onChange={handleFormChange}>
-                      <option value="">Select Interest</option>
-                      {interests.map((data)=>{
-                        return (<option value={data._id}> {data.name}</option>)
-                      })}
-                    </select>
-                  </div>
-                  <div class="pt-4 modal-select">
-                    <select name="userID" id="" class="select-modal" onChange={handleFormChange}>
-                      <option value="">Select User</option>
-                      {sortedUsers.map((user)=>{
-                        return (<option value={user._id}> {user.email}</option>)
-                      })}
-                    </select>
-                  </div>
-                  <div class="pt-4 modal-select">
-                    <select name="mood" id="" class="select-modal" onChange={handleFormChange}>
-                      <option value="">Select Mood</option>
-                      <option value="happy">HAPPY</option>
-                      <option value="sad">SAD</option>
-                      <option value="angry">ANGRY</option>
-                    </select>
-                  </div>
-                  <div class="pt-4">
-                    <p>Upload file (audio mp3 format)</p>
-                    <div>
+                      {image != null ? <img src={image} alt='' className='uploadImg' /> : <></>}
                       <div>
-                        <label for="input-file1" class="audio-cover"> {audioFile==null?<><span class="text-primary"> click to upload</span> or drag and drop</>:<>{audioFile.name}</>} </label>
+                        <label for="input-file" class="img-cover">
+                          <div><span class="text-primary">click to upload</span></div>
+                        </label>
                       </div>
-                      <input type="file" id="input-file1" class="hidden" onChange={handleAudioSelected}  accept="audio/mp3"/>
+                      <input type="file" id="input-file" class="hidden" onChange={handleFileSelected} accept="image/png, image/gif, image/jpeg" />
                     </div>
-                  </div>
-                  <div class="modal-create-content">
-                    <button type='submit'>{loadingCreation?<>Uploading Data...</>:<>Create Content</>}</button>
+                    <div class="pt-4">
+                      <p>Title</p>
+                      <div class="title">
+                        <input type="text" name="title" id="title" onChange={handleFormChange} />
+                      </div>
+                    </div>
+                    <div class="pt-4">
+                      <p>Description</p>
+                      <div class="description">
+                        <textarea name="descp" id="" onChange={handleFormChange}></textarea>
+                      </div>
+                    </div>
+                    <div class="pt-4">
+                      <p>Duration</p>
+                      <div class="title">
+                        <input type="text" name="duration" onChange={handleFormChange} />
+                      </div>
+                    </div>
+                    <div class="pt-4 modal-select">
+                      <select name="interest" id="" class="select-modal" onChange={handleFormChange}>
+                        <option value="">Select Interest</option>
+                        {interests.map((data) => {
+                          return (<option value={data._id}> {data.name}</option>)
+                        })}
+                      </select>
+                    </div>
+                    <div class="pt-4 modal-select">
+                      <select name="userID" id="" class="select-modal" onChange={handleFormChange}>
+                        <option value="">Select User</option>
+                        {sortedUsers.map((user) => {
+                          return (<option value={user._id}> {user.email}</option>)
+                        })}
+                      </select>
+                    </div>
+                    <div class="pt-4 modal-select">
+                      <select name="mood" id="mood" class="select-modal" onChange={handleFormChange}>
+                        <option value="">Select Mood</option>
+                        <option value="happy">HAPPY</option>
+                        <option value="sad">SAD</option>
+                        <option value="angry">ANGRY</option>
+                      </select>
+                    </div>
+                    <div class="pt-4">
+                      <p>Upload file (audio mp3 format)</p>
+                      <div>
+                        <div>
+                          <label for="input-file1" class="audio-cover"> {audioFile == null ? <><span class="text-primary"> click to upload</span> or drag and drop</> : <>{audioFile.name}</>} </label>
+                        </div>
+                        <input type="file" id="input-file1" class="hidden" onChange={handleAudioSelected} accept="audio/mp3" />
+                      </div>
+                    </div>
+                    <div class="modal-create-content">
+                      <button type='submit'>{loadingCreation ? <>Uploading Data...</> : <>Create Content</>}</button>
+                    </div>
                   </div>
                 </div>
-              </div>
               </form>
             </div>
           </div>
