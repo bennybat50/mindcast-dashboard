@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BASE_URL, USER_DOMAIN } from '../utils/config';
 import { Cloudinary } from "@cloudinary/url-gen";
 import axios from 'axios';
+import EditUserProfileModal from './Edituser';
 
 
 function CreateUsers() {
@@ -140,6 +141,10 @@ function CreateUsers() {
 
   }
 
+  const handleUpdateUser = () => {
+    fetchData(); 
+  };
+
   return (
     <div>
       <div className="w-100 container-fluid bg-light pt-4">
@@ -208,7 +213,7 @@ function CreateUsers() {
                                 <a className="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                                   Edit Profile
                                 </a>
-                                <a className="dropdown-item" href="#">
+                                <a className="dropdown-item" href="#" data-toggle="modal" data-target="#editUserProfileModal">
                                   Send Message
                                 </a>
                                 <a className="dropdown-item text-danger" href="#" data-toggle="modal"
@@ -241,6 +246,9 @@ function CreateUsers() {
 
       </div>
 
+
+
+{/* create modal */}
 
       <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -309,6 +317,16 @@ function CreateUsers() {
           </div>
         </div>
       </div>
+
+
+
+      {/* edit user modal */}
+
+ {/* Edit user profile modal */}
+ {sortedUsers.map(user => (
+        <EditUserProfileModal key={user.id} user={user} onUpdate={handleUpdateUser} />
+      ))}
+      
     </div>
   )
 }

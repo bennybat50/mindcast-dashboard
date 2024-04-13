@@ -30,15 +30,15 @@ function CreateInterest() {
         }
     };
 
-    const handleDelete = async (me) => {
+    const handleDelete = async (interestId) => {
         try {
-            let auser = { "id": me }
-            console.log(auser);
-            const response = await axios.post(`${BASE_URL}${USER_DOMAIN}/interests`, auser);
+            // let auser = { "id": me } 
+            // console.log(auser);
+            const response = await axios.post(`${BASE_URL}${USER_DOMAIN}/interest/delete`, { id: interestId })
             if (response.status === 200) {
-                fetchData();
-                alert("User Deleted")
-                console.log('Data deleted successfully');
+                // fetchData();
+                alert("User interests deleted")
+                console.log('interests deleted successfully');
             }
         } catch (error) {
             console.error('Error deleting data:', error.message);
@@ -53,7 +53,7 @@ function CreateInterest() {
 
         try {
             let resourceData = {
-                "Interest": postinterests,
+                name: postinterests,
               }
 
               const res = await axios.post(`${BASE_URL}${USER_DOMAIN}/interest`, resourceData);
@@ -94,8 +94,9 @@ function CreateInterest() {
 
 
 
+            <div className="w-100 container-fluid bg-light pt-4">
 
-            <div className="col-xl-8 col-lg-7">
+            <div className=" w-100 ">
                 <div className="card mb-4">
                     <div className="card-header py-3 flex-row">
                         <h6 className="m-0 font-weight-bold text-dark">All Interests</h6>
@@ -114,9 +115,9 @@ function CreateInterest() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {interests.map((interest) => {
-                                              return (
-                                            <tr>
+                                        {interests.map((interest) => (
+                                              
+                                            <tr key={interest.id}>
                                                 <th scope="row">
                                                    {interest.name}
                                                 </th>
@@ -131,7 +132,7 @@ function CreateInterest() {
                                                             aria-labelledby="userDropdown">
                                                             <a className="dropdown-item text-danger" href="#" data-toggle="modal"
                                                                 data-target=""
-                                                                onClick={() => handleDelete(interest._id)}
+                                                                onClick={() => handleDelete(interest.interest_id)}
                                                             >
                                                                 Delete Profile
                                                             </a>
@@ -139,8 +140,8 @@ function CreateInterest() {
                                                     </li>
                                                 </td>
                                             </tr>
-                                            )
-                                        })}
+                                            
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
@@ -151,8 +152,9 @@ function CreateInterest() {
                 </div>
             </div>
 
+            </div>
 
-
+            
             <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
