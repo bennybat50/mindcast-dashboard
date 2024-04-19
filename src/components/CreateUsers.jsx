@@ -81,7 +81,6 @@ function CreateUsers() {
 
       if (imageURL != null) {
         let resourceData = {
-
           "email": email,
           "username": username,
           "image": imageURL,
